@@ -27,3 +27,19 @@ jobs:
         run: curl -f -k --retry 5 --retry-connrefused --connect-timeout 30 --retry-delay 30 https://localhost:8443/fineract-provider/actuator/health
       - name: Check info
         run: (( $(curl -f -k --retry 5 --retry-connrefused --connect-timeout 30 --retry-delay 30 https://localhost:8443/fineract-provider/actuator/info | wc --chars) > 100 ))
+      - name: Login docker hub
+        env:
+          DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
+          DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+        # 指定login命令登录hub.docker.com，帐号和密码已经在GitHub网页中配置好了
+        run: |
+          echo "${DOCKER_PASSWORD}" | docker login --username ${DOCKER_USERNAME} --password-stdin
+      - name: push image
+        run: |
+          docker push 0x153/fineract:latest
+      - name: Upload loc as a Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: data
+          path: ./fineract-provider/build/data
+          retention-days: 1
