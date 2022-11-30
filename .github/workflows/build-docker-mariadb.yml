@@ -19,14 +19,14 @@ jobs:
           cache: gradle
       - name: Build the image
         run: ./gradlew :fineract-provider:clean :fineract-provider:jibDockerBuild -x test
-      - name: Start the stack
-        run: docker-compose up -d
-      - name: Wait for stack to come up
-        run: sleep 60
-      - name: Check health
-        run: curl -f -k --retry 5 --retry-connrefused --connect-timeout 30 --retry-delay 30 https://localhost:8443/fineract-provider/actuator/health
-      - name: Check info
-        run: (( $(curl -f -k --retry 5 --retry-connrefused --connect-timeout 30 --retry-delay 30 https://localhost:8443/fineract-provider/actuator/info | wc --chars) > 100 ))
+#      - name: Start the stack
+#        run: docker-compose up -d
+#      - name: Wait for stack to come up
+#        run: sleep 60
+#      - name: Check health
+#        run: curl -f -k --retry 5 --retry-connrefused --connect-timeout 30 --retry-delay 30 https://localhost:8443/fineract-provider/actuator/health
+#      - name: Check info
+#        run: (( $(curl -f -k --retry 5 --retry-connrefused --connect-timeout 30 --retry-delay 30 https://localhost:8443/fineract-provider/actuator/info | wc --chars) > 100 ))
       - name: Login docker hub
         env:
           DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
@@ -34,9 +34,12 @@ jobs:
         # 指定login命令登录hub.docker.com，帐号和密码已经在GitHub网页中配置好了
         run: |
           echo "${DOCKER_PASSWORD}" | docker login --username ${DOCKER_USERNAME} --password-stdin
+      - name: tag image
+        run: |
+          docker tag fineract:latest 0x153/fineract:latest
       - name: push image
         run: |
-          docker push fineract:latest
+          docker push 0x153/fineract:latest
       - name: Upload loc as a Build Artifact
         uses: actions/upload-artifact@v3
         with:
