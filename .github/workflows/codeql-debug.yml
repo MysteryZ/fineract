@@ -1,0 +1,76 @@
+name: "CodeQL Debugging"
+on: [workflow_dispatch,push]
+
+jobs:
+  debug:
+    name: CodeQL Debug Job
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+       # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python' ]
+       #   languages: go, javascript, csharp, python, cpp, java, ruby
+        # Learn more:
+        # https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed
+        language: [ 'java' ]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: delombok 
+      uses: advanced-security/delombok@main
+
+    - name: Initialize CodeQL
+      id: codeqlinit
+      uses: github/codeql-action/init@v2
+      with:
+        debug: true
+        languages: ${{ matrix.language }}
+        config-file: advanced-security/codeql-queries/config/codeql.yml@main #ql better
+
+    
+    - name: Auto Build CodeQL Databases
+      uses: github/codeql-action/autobuild@v2
+      
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+      with:
+        category: "/language:${{matrix.language}}"
+        add-snippets: true
+        output: SARIF_results
+
+
+    - name: Debug Analysis
+      #uses: zbazztian/codeql-tools/debug@main
+      uses: SummerSec/codeql-debug@master
+      with:
+        language: ${{ matrix.language }}
+
+
+    - name: Upload loc as a Build Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: codeql-debug-results
+        path: codeql-debug-results
+        retention-days: 1
+
+    # - name: Upload loc as a Build Artifact
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: codeql_databases
+    #     path: /home/runner/work/_temp/codeql_databases/${{ matrix.language }}
+    #     retention-days: 1
+
+    #不需要上传结果，直接看就行
+    # - name: Upload loc as a Build Artifact
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: codeql_result
+    #     path:  ${{ github.workspace }}/SARIF_results
+    #     retention-days: 30

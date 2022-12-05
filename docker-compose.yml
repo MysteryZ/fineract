@@ -36,15 +36,20 @@ services:
     ports:
       - "3306:3306"
   fineract-server:
-    image: fineract:latest
+    image: 0x153/fineract:latest
     volumes:
       - ./fineract-provider/build/data:/data
+    user: "0:0"
+    command : [ "-Duser.home=/tmp", "-Dfile.encoding=UTF-8", "-Duser.timezone=UTC", "-Djava.security.egd=file:/dev/./urandom" ]
+    entrypoint: [ "java","-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005", "-Xms1G", "-XshowSettings:vm", "-XX:+UseContainerSupport", "-XX:+UseStringDeduplication", "-XX:MinRAMPercentage=25", "-XX:MaxRAMPercentage=80", "--add-exports=java.naming/com.sun.jndi.ldap=ALL-UNNAMED", "--add-opens=java.base/java.lang=ALL-UNNAMED", "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED", "--add-opens=java.base/java.io=ALL-UNNAMED", "--add-opens=java.base/java.security=ALL-UNNAMED", "--add-opens=java.base/java.util=ALL-UNNAMED", "--add-opens=java.management/javax.management=ALL-UNNAMED", "--add-opens=java.naming/javax.naming=ALL-UNNAMED", "-cp", "@/app/jib-classpath-file", "org.apache.fineract.ServerApplication" ]
+    #entrypoint: [ "java", "-Xms1G", "-XshowSettings:vm", "-XX:+UseContainerSupport", "-XX:+UseStringDeduplication", "-XX:MinRAMPercentage=25", "-XX:MaxRAMPercentage=80", "--add-exports=java.naming/com.sun.jndi.ldap=ALL-UNNAMED", "--add-opens=java.base/java.lang=ALL-UNNAMED", "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED", "--add-opens=java.base/java.io=ALL-UNNAMED", "--add-opens=java.base/java.security=ALL-UNNAMED", "--add-opens=java.base/java.util=ALL-UNNAMED", "--add-opens=java.management/javax.management=ALL-UNNAMED", "--add-opens=java.naming/javax.naming=ALL-UNNAMED", "-cp", "@/app/jib-classpath-file", "org.apache.fineract.ServerApplication" ]
     healthcheck:
       test: ["CMD", 'sh', '-c', 'echo -e "Checking for the availability of Fineract server deployment"; while ! nc -z "fineract-server" 8443; do sleep 1; printf "-"; done; echo -e " >> Fineract server has started";' ]
       timeout: 10s
       retries: 10
     ports:
       - 8443:8443
+      - 5005:5005
     depends_on:
       fineractmysql:
         condition: service_healthy

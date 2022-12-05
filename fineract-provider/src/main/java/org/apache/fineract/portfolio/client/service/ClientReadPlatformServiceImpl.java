@@ -329,7 +329,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 
         String sql = "select " + this.lookupMapper.schema();
 
-        if (StringUtils.isNotBlank(extraCriteria)) {
+        if (StringUtils.isNotBlank(extraCriteria)) {·
             sql += " and (" + extraCriteria + ")";
             this.columnValidator.validateSqlInjection(sql, extraCriteria);
         }
