@@ -22,8 +22,8 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: delombok 
-      uses: advanced-security/delombok@main
+    # - name: delombok 
+    #   uses: advanced-security/delombok@main
 
     - name: Initialize CodeQL
       id: codeqlinit
@@ -34,9 +34,11 @@ jobs:
         config-file: advanced-security/codeql-queries/config/codeql.yml@main #ql better
 
     
-    - name: Auto Build CodeQL Databases
-      uses: github/codeql-action/autobuild@v2
-      
+    # - name: Auto Build CodeQL Databases
+    #   uses: github/codeql-action/autobuild@v2
+    - run: ./gradlew :fineract-provider:clean :fineract-provider:build  -x test
+    #     make bootstrap
+    #     make release
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
