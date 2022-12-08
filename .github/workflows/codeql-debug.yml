@@ -38,7 +38,7 @@ jobs:
       with:
         debug: true
         languages: ${{ matrix.language }}
-        config-file: advanced-security/codeql-queries/config/codeql.yml@main #ql better
+        config-file: ./.github/codeql.yml #ql better
 
     
     # - name: Auto Build CodeQL Databases
