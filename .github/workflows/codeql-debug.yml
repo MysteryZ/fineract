@@ -29,8 +29,8 @@ jobs:
         java-version: '17'
         distribution: 'zulu'
         cache: gradle
-    # - name: delombok 
-    #   uses: advanced-security/delombok@main
+     - name: delombok
+       uses: advanced-security/delombok@main
 
     - name: Initialize CodeQL
       id: codeqlinit
