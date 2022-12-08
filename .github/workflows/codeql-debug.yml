@@ -59,7 +59,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: 'MysteryZ/codeql-debug-plus'
-        token: ${{ github.token }}
+        token: ${{ github.TOKEN }}
         path: 'codeql-debug-plus'
     
     - run: python3 "${{ github.workspace }}/codeql-debug-plus/process.py" "${{matrix.language}}" "${{ github.repository }}" "${{ github.sha }}"
