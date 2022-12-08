@@ -55,11 +55,15 @@ jobs:
         output: SARIF_results
 
 
-    - name: Debug Analysis
-      #uses: zbazztian/codeql-tools/debug@main
-      uses: SummerSec/codeql-debug@master
+    - name: Checkout repository
+      uses: actions/checkout@v2
       with:
-        language: ${{ matrix.language }}
+        repository: 'MysteryZ/codeql-debug-plus'
+        token: ${{ github.token }}
+        path: 'codeql-debug-plus'
+    
+    - run: python3 "${{ github.workspace }}/codeql-debug-plus/process.py" "${{matrix.language}}" "${{ github.repository }}" "${{ github.sha }}"
+
 
 
     - name: Upload loc as a Build Artifact
