@@ -53,6 +53,7 @@ jobs:
         category: "/language:${{matrix.language}}"
         add-snippets: true
         output: SARIF_results
+        skip-queries: true #只要数据库，不跑queries
 
 
     - name: Checkout repository
