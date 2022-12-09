@@ -45,4 +45,5 @@ query-filters:
           - java/log-injection
           - java/sql-injection
           - java/polynomial-redos
+          - java/user-controlled-bypass
 
